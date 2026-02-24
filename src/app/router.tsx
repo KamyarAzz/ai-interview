@@ -1,6 +1,8 @@
 import {createBrowserRouter} from "react-router";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import SignupPage from "@/features/auth/pages/SignupPage";
+import DashboardPage from "@/features/dashboard/pages/DashboardPage";
+import UserLayout from "@/components/layout/UserLayout";
 
 export const router = createBrowserRouter([
   {
@@ -15,13 +17,17 @@ export const router = createBrowserRouter([
     path: "/signup",
     element: <SignupPage />,
   },
-  // {
-  //   path: "/",
-  //   element: <DashboardLayout />, // sidebar layout
-  //   children: [
-  //     {index: true, element: <DashboardPage />},
-  //     {path: "interview", element: <InterviewPage />},
-  //     {path: "feedback", element: <FeedbackPage />},
-  //   ],
-  // },
+  {
+    element: <UserLayout />,
+    children: [
+      {
+        path: "/dashboard",
+        element: <DashboardPage />,
+      },
+      {
+        path: "/interview",
+        element: <></>,
+      },
+    ],
+  },
 ]);
