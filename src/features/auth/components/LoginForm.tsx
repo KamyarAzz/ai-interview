@@ -1,4 +1,4 @@
-import {Link, useNavigate} from "react-router";
+import {Link} from "react-router";
 import {toast} from "react-toastify";
 import {FirebaseError} from "firebase/app";
 import {
@@ -13,8 +13,6 @@ import {Input} from "@/components/ui/Input";
 import {auth} from "@/lib/firebase";
 
 export default function LoginForm() {
-  const navigate = useNavigate();
-
   const handleLogin = async (data: FormData) => {
     const email = data.get("email");
     const password = data.get("password");
@@ -44,7 +42,6 @@ export default function LoginForm() {
       await signInWithEmailAndPassword(auth, email, password);
 
       toast("Login successful");
-      navigate("/dashboard");
     } catch (error) {
       if (error instanceof FirebaseError) {
         toast(error.message);
@@ -77,7 +74,7 @@ export default function LoginForm() {
           className="hover:text-gray-900 duration-75 cursor-pointer"
           to="/signup"
         >
-          Signin
+          Signup
         </Link>
       </p>
     </FormWrapper>
