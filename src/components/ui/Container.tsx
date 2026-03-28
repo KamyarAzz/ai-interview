@@ -7,7 +7,7 @@ export default function Container({children, className}: Props) {
   return (
     <div
       className={clsx(
-        "flex flex-col gap-4 py-4 px-8 mx-auto rounded-md shadow w-min mt-10",
+        "flex flex-col gap-4 py-4 px-8 mx-auto rounded-md shadow",
         className,
       )}
     >
