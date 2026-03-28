@@ -25,10 +25,13 @@ export default function ProfileBox({user, setIsOpened}: Props) {
   return (
     <div
       ref={ref}
-      className="absolute top-16 right-0 bg-white shadow-lg rounded-md p-4 w-min cursor-auto"
+      className="absolute shadow top-16 right-6 flex flex-col gap-2 bg-white rounded-md p-4 w-min cursor-auto"
     >
       {user?.displayName || user?.email}
-      <p>Profile Options</p>
+      <p className="cursor-pointer hover:text-blue-700 duration-100">
+        Settings
+      </p>
+      <p className="cursor-pointer hover:text-blue-700 duration-100">Logout</p>
     </div>
   );
 }
