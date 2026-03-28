@@ -11,8 +11,13 @@ import {Button} from "@/components/ui/Button";
 import FormWrapper from "@/components/ui/FormWrapper";
 import {Input} from "@/components/ui/Input";
 import {auth} from "@/lib/firebase";
+import {useAuthStore} from "@/stores/authStore";
+import {useState} from "react";
 
 export default function LoginForm() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const setUser = useAuthStore((state) => state.setUser);
+
   const handleLogin = async (data: FormData) => {
     const email = data.get("email");
     const password = data.get("password");
@@ -34,12 +39,25 @@ export default function LoginForm() {
     }
 
     try {
+      setLoading(true);
       await setPersistence(
         auth,
         remember ? browserLocalPersistence : browserSessionPersistence,
       );
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      const firebaseUser = userCredential.user;
 
-      await signInWithEmailAndPassword(auth, email, password);
+      // Store user in auth store
+      setUser({
+        id: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
+      });
 
       toast("Login successful");
     } catch (error) {
@@ -48,6 +66,8 @@ export default function LoginForm() {
       } else {
         toast("Unexpected error occurred");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,7 +87,7 @@ export default function LoginForm() {
         />
         <label htmlFor="remember">Remember me</label>
       </div>
-      <Button>Login</Button>
+      <Button disabled={loading}>Login</Button>
       <p className="text-gray-500 text-sm text-center">
         Dont have an account?{" "}
         <Link

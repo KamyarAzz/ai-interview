@@ -9,9 +9,7 @@ export default function PublicRoute() {
   const loading = useAuthStore((state) => state.loading);
 
   useEffect(() => {
-    console.log("changed");
     if (!loading && user) {
-      console.log("Redirecting to dashboard");
       navigate("/dashboard", {replace: true});
     }
   }, [user, loading, navigate]);
