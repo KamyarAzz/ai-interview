@@ -5,6 +5,7 @@ import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import UserLayout from "@/components/layout/UserLayout";
 import ErrorPage from "@/components/layout/ErrorPage";
 import PublicRoute from "@/components/layout/PublicRoute";
+import IntervfiewPage from "@/features/interview/pages/IntervfiewPage";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,14 @@ export const router = createBrowserRouter([
       },
       {
         path: "/interview",
+        element: <IntervfiewPage />,
+      },
+      {
+        path: "/interview-history",
+        element: <></>,
+      },
+      {
+        path: "/settings",
         element: <></>,
       },
     ],

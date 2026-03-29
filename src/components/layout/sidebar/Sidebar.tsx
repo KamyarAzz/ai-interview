@@ -13,8 +13,8 @@ export default function Sidebar() {
       image: dashboardIcon,
     },
     {
-      name: "Interviews",
-      href: "/interviews",
+      name: "Interview",
+      href: "/interview",
       image: interviewIcon,
     },
     {
@@ -29,10 +29,9 @@ export default function Sidebar() {
     },
   ];
 
-  const logoutItem = {
-    name: "Logout",
-    href: "/logout",
-    image: logoutIcon,
+  const logout = () => {
+    localStorage.removeItem("token");
+    // Todo: Logout functioanlity
   };
 
   return (
@@ -40,8 +39,12 @@ export default function Sidebar() {
       {sidebarItems.map((item) => (
         <SidebarItem key={item.href} item={item} />
       ))}
-      <div className="mt-auto">
-        <SidebarItem item={logoutItem} />
+      <div
+        onClick={logout}
+        className="w-full mt-auto flex items-center gap-2 px-2.5 py-2 rounded-md transition hover:bg-gray-200"
+      >
+        <img className="w-6 h-6" src={logoutIcon} alt="Logout" />
+        <span>Logout</span>
       </div>
     </div>
   );

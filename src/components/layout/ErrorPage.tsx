@@ -1,8 +1,8 @@
-import {useRouteError, isRouteErrorResponse, Link} from "react-router";
+import {isRouteErrorResponse, Link, useRouteError} from "react-router";
 
-export default function ErrorPage() {
-  const error = useRouteError();
-
+export default function ErrorPage({propError}: {propError?: unknown}) {
+  const routeError = useRouteError();
+  const error = propError ?? routeError;
   let message = "Something went wrong.";
 
   if (isRouteErrorResponse(error)) {
@@ -12,7 +12,7 @@ export default function ErrorPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center gap-4">
+    <div className="h-full flex flex-col items-center justify-center gap-4">
       <h1 className="text-3xl font-bold">Oops 👀</h1>
       <p>{message}</p>
       <Link
