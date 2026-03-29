@@ -6,6 +6,8 @@ import UserLayout from "@/components/layout/UserLayout";
 import ErrorPage from "@/components/layout/ErrorPage";
 import PublicRoute from "@/components/layout/PublicRoute";
 import InterviewPage from "@/features/interview/pages/InterviewPage";
+import InterviewHistoryPage from "@/features/interview-history/pages/InterviewHistoryPage";
+import SettingsPage from "@/features/settings/pages/SettingsPage";
 
 export const router = createBrowserRouter([
   {
@@ -39,11 +41,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/interview-history",
-        element: <></>,
+        element: <InterviewHistoryPage />,
       },
       {
         path: "/settings",
-        element: <></>,
+        element: <SettingsPage />,
       },
     ],
   },
