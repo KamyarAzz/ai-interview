@@ -1,18 +1,32 @@
 import {createInterviewChat, sendInterviewMessage} from "@/lib/aiService";
-import {type InterviewMessage} from "@/types/interview";
+import {type InterviewContext, type InterviewMessage} from "@/types/interview";
 import {type Chat} from "@google/genai";
 import {useState, useRef} from "react";
 import popSoundEffect from "@/assets/sounds/pop.mp3";
 import TextBubble from "./TextBubble";
 import LoadingBubble from "./LoadingBubble";
 import ChatInputs from "./ChatInputs";
+import {Link} from "react-router";
 
 const InterviewChat = () => {
-  const expertise = "Software Engineering"; // ToDo: Make this dynamic based on the job role
-  const totalQuestions = 2; // Total number of questions in the interview
+  // TEST DATA - this would come from props or context in a real app
+  const interviewContext: InterviewContext = {
+    expertise: "Software Engineering",
+    experience: "Mid",
+    competencies: ["problem-solving", "system design", "coding"],
+    timeLimitEnabled: false,
+    timePerQuestion: 150,
+    totalQuestions: 2,
+    currentQuestion: 0,
+    phase: "interview",
+  };
+
   const [messages, setMessages] = useState<InterviewMessage[]>([]);
   const [loading, setLoading] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [currentQuestion, setCurrentQuestion] = useState(
+    interviewContext.currentQuestion || 0,
+  );
+  const [endedInterview, setEndedInterview] = useState(false);
 
   // We use a ref to store the audio element for the send sound effect, so it doesn't cause re-renders when updated
   const sendSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -46,9 +60,13 @@ const InterviewChat = () => {
       role: "user",
       text: "Hello! Let's start.",
     };
+    setCurrentQuestion(0);
 
     // Initialize the chat with the initial user message
-    chatRef.current = createInterviewChat([initialUserMessage], expertise);
+    chatRef.current = createInterviewChat(
+      [initialUserMessage],
+      interviewContext.expertise,
+    );
     sendMessage(initialUserMessage.text, () => {});
   };
 
@@ -80,13 +98,20 @@ const InterviewChat = () => {
         newUserMsg.text,
         {
           currentQuestion,
-          totalQuestions,
+          totalQuestions: interviewContext.totalQuestions,
           phase: "interview",
-          expertise: expertise,
+          expertise: interviewContext.expertise,
+          experience: interviewContext.experience,
+          competencies: interviewContext.competencies,
         },
       );
-      addMessageToChat({role: "model", text: responseText});
-      setCurrentQuestion((prev) => prev + 1);
+      console.log(currentQuestion, interviewContext.totalQuestions);
+      if (currentQuestion < interviewContext.totalQuestions) {
+        addMessageToChat({role: "model", text: responseText});
+        setCurrentQuestion((prev) => prev + 1);
+      } else {
+        endInterview();
+      }
     } catch (err) {
       console.error("Chat Error:", err);
     } finally {
@@ -100,12 +125,38 @@ const InterviewChat = () => {
   };
 
   const endInterview = () => {
-    alert("Ending interview not implemented yet!");
+    const finalSummary = `
+      Thank you for taking the time to participate in this interview. This concludes our session.
+
+      You can now review your performance and detailed feedback, including strengths, areas for improvement, and overall evaluation.
+
+      I appreciate your effort and wish you the best in your continued preparation.
+    `;
+
+    addMessageToChat({role: "model", text: finalSummary});
+    setEndedInterview(true);
+  };
+
+  const navigateToFeedback = () => {
+    // In a real app, you would use something like React Router's useNavigate here
+    // navigate("/feedback", { state: { messages, interviewContext } });
   };
 
   return (
-    <div className="p-4 h-full flex flex-col">
+    <div className="p-2 h-full flex flex-col">
       <audio id="audio" className="hidden" controls />
+      <div className="flex relative">
+        <Link
+          to="/dashboard"
+          className="absolute left-0 top-0 text-sm text-gray-500 hover:text-gray-700"
+        >
+          &larr; Back to Dashboard
+        </Link>
+        <h1 className="text-lg font-semibold text-center w-full">
+          {interviewContext.expertise} Interview - {interviewContext.experience}{" "}
+          Level
+        </h1>
+      </div>
       <div className="h-full flex flex-col overflow-auto overflow-y-auto border gap-2 rounded-md p-2 mb-4">
         {messages.map((m, i) => (
           <TextBubble key={i} message={m} />
@@ -119,7 +170,7 @@ const InterviewChat = () => {
         >
           Start Interview
         </button>
-      ) : currentQuestion < totalQuestions ? (
+      ) : !endedInterview ? (
         <ChatInputs
           recordFunction={recordVoice}
           sendMessageFunction={sendMessage}
@@ -129,7 +180,7 @@ const InterviewChat = () => {
         <div className="text-center flex flex-col gap-2 text-gray-500">
           <p>Interview complete! Thank you for participating.</p>
           <button
-            onClick={endInterview}
+            onClick={navigateToFeedback}
             className="bg-yellow-500 rounded-md cursor-pointer mx-auto hover:bg-yellow-700 duration-200 text-white p-2"
           >
             View Feedback

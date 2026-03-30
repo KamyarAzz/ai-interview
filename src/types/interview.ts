@@ -5,9 +5,15 @@ export interface InterviewMessage {
   text: string;
 }
 
-export type Context = {
-  currentQuestion: number;
-  totalQuestions: number;
-  phase: "interview" | "feedback";
+export type ExperienceLevel = "Intern" | "Junior" | "Mid" | "Senior" | "Lead";
+
+export type InterviewContext = {
   expertise: string;
+  experience: ExperienceLevel;
+  competencies?: string[];
+  phase: "interview" | "feedback";
+  currentQuestion?: number;
+  totalQuestions: number;
+  timePerQuestion?: number;
+  timeLimitEnabled?: boolean;
 };

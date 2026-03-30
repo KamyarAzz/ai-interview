@@ -1,36 +1,57 @@
 import {GoogleGenAI, type Chat, type Content} from "@google/genai";
-import {type Context, type InterviewMessage} from "@/types/interview";
+import {type InterviewContext, type InterviewMessage} from "@/types/interview";
 
-const generateSystemInstruction = (expertise: string): string => {
+const generateSystemInstruction = (context: InterviewContext): string => {
   return `
-You are a Senior ${expertise} conducting a structured professional interview.
+ou are an expert ${context.expertise} interviewer conducting a structured professional interview.
 
-Context:
-- The candidate is applying for a role in ${expertise}
+Candidate Context:
+- Field: ${context.expertise}
+- Experience Level: ${context.experience}
+- Key Competencies: ${context.competencies?.length ? context.competencies.join(", ") : "Not specified"}
 
 Strict Rules:
 - Ask exactly one question at a time
-- Keep questions concise and relevant to ${expertise}
+- Keep questions concise and relevant to ${context.expertise}
 - Do NOT ask multiple questions
-- Do NOT continue if the interview is finished
+- Do NOT explain answers unless asked
+- Do NOT continue asking questions once the interview is complete
+- If the provided context is unclear, infer a realistic professional scenario
+
+Interview Guidelines:
+- Tailor all questions to the candidate’s field and competencies
+- Prefer practical, real-world and scenario-based questions
+- Avoid generic or irrelevant questions
+
+Adaptation Based on Experience Level:
+- Intern/Junior: focus on fundamentals, clarity, and basic understanding
+- Mid-level: focus on practical application and real-world scenarios
+- Senior: focus on advanced topics, trade-offs, and decision-making
+
+Competency Focus:
+- Prioritize questions around the provided competencies
+- If competencies are missing, fall back to general domain knowledge in ${context.expertise}
 
 Interview Structure:
 1. Introduction
-2-4. Core ${expertise} questions
-5. Problem-solving in ${expertise}
-6. Behavioral
+2. Domain-specific questions
+3. Problem-solving or scenario-based question
+4. Behavioral or reflection question
 
-Adapt difficulty based on a mid-level candidate.
+Completion Rules:
+- The interview has a fixed number of questions (provided at runtime)
+- Respect the current question number and total question limit
+- Do NOT continue past the final question
 
-When Phase = feedback:
-- STOP asking questions
-- Provide a full evaluation
+When Phase = "feedback":
+- STOP asking questions immediately
+- Analyze the full interview performance
 
 Evaluation format (JSON ONLY):
 {
   "scores": {
     "communication": number,
-    "technical": number,
+    "domainKnowledge": number,
     "problemSolving": number,
     "confidence": number
   },
@@ -39,8 +60,17 @@ Evaluation format (JSON ONLY):
   "improvements": string[],
   "finalSummary": string
 }
+
+Evaluation Guidelines:
+- Be specific and realistic
+- Reference the candidate’s actual answers
+- Avoid generic feedback
+- Keep tone professional and constructive
+
 `;
 };
+
+const model = "gemini-2.5-flash-lite"; // Use a specific Gemini model optimized for chat interactions
 
 const ai = new GoogleGenAI({
   apiKey: import.meta.env.VITE_GEMINI_API_KEY,
@@ -58,9 +88,11 @@ export const createInterviewChat = (
   initialHistory: InterviewMessage[] = [],
   expertise: string,
 ): Chat => {
-  const systemInstruction = generateSystemInstruction(expertise);
+  const systemInstruction = generateSystemInstruction({
+    expertise,
+  } as InterviewContext);
   return ai.chats.create({
-    model: "gemini-2.5-flash",
+    model,
     config: {
       systemInstruction,
     },
@@ -71,11 +103,13 @@ export const createInterviewChat = (
 export const sendInterviewMessage = async (
   chat: Chat,
   message: string,
-  context: Context,
+  context: InterviewContext,
 ): Promise<string> => {
   try {
     const prompt = `
 Field: ${context.expertise}
+Experience Level: ${context.experience}
+${context.competencies?.length ? `Competencies: ${context.competencies.join(", ")}` : "No competencies specified"}
 Phase: ${context.phase}
 Question: ${context.currentQuestion}/${context.totalQuestions}
 
