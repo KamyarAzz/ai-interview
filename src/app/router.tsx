@@ -8,6 +8,7 @@ import PublicRoute from "@/components/layout/PublicRoute";
 import InterviewPage from "@/features/interview/pages/InterviewPage";
 import InterviewHistoryPage from "@/features/interview-history/pages/InterviewHistoryPage";
 import SettingsPage from "@/features/settings/pages/SettingsPage";
+import SubsriptionsPage from "@/features/subscriptions/pages/SubsriptionsPage";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
       {
         path: "/interview-history",
         element: <InterviewHistoryPage />,
+      },
+      {
+        path: "/subscriptions",
+        element: <SubsriptionsPage />,
       },
       {
         path: "/settings",

@@ -2,6 +2,7 @@ import SidebarItem from "./SidebarItem";
 import dashboardIcon from "../../../assets/images/sidebar/dashboard.svg";
 import interviewIcon from "../../../assets/images/sidebar/interview.svg";
 import historyIcon from "../../../assets/images/sidebar/history.svg";
+import subscriptionsIcon from "../../../assets/images/sidebar/calendar.svg";
 import settingsIcon from "../../../assets/images/sidebar/settings.svg";
 import logoutIcon from "../../../assets/images/sidebar/logout.svg";
 
@@ -22,6 +23,7 @@ export default function Sidebar() {
       href: "/interview-history",
       image: historyIcon,
     },
+    {name: "Subscriptions", href: "/subscriptions", image: subscriptionsIcon},
     {
       name: "Settings",
       href: "/settings",
