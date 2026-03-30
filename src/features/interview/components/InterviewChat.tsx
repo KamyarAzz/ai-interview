@@ -1,4 +1,4 @@
-import {createInterviewChat, sendMessageToAI} from "@/lib/aiService";
+import {createInterviewChat, sendInterviewMessage} from "@/lib/aiService";
 import {type InterviewMessage} from "@/types/interview";
 import {type Chat} from "@google/genai";
 import {useState, useRef} from "react";
@@ -8,8 +8,11 @@ import LoadingBubble from "./LoadingBubble";
 import ChatInputs from "./ChatInputs";
 
 const InterviewChat = () => {
+  const expertise = "Software Engineering"; // ToDo: Make this dynamic based on the job role
+  const totalQuestions = 2; // Total number of questions in the interview
   const [messages, setMessages] = useState<InterviewMessage[]>([]);
   const [loading, setLoading] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(1);
 
   // We use a ref to store the audio element for the send sound effect, so it doesn't cause re-renders when updated
   const sendSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -45,13 +48,13 @@ const InterviewChat = () => {
     };
 
     // Initialize the chat with the initial user message
-    chatRef.current = createInterviewChat([initialUserMessage]);
+    chatRef.current = createInterviewChat([initialUserMessage], expertise);
     sendMessage(initialUserMessage.text, () => {});
   };
 
   const addMessageToChat = (message: InterviewMessage) => {
-    setMessages((prev) => [...prev, message]);
     playSound();
+    setMessages((prev) => [...prev, message]);
   };
 
   const messageValidation = (message: string) => {
@@ -70,13 +73,20 @@ const InterviewChat = () => {
     addMessageToChat(newUserMsg);
 
     try {
+      resetInput();
       setLoading(true);
-      const responseText = await sendMessageToAI(
+      const responseText = await sendInterviewMessage(
         chatRef.current,
         newUserMsg.text,
+        {
+          currentQuestion,
+          totalQuestions,
+          phase: "interview",
+          expertise: expertise,
+        },
       );
       addMessageToChat({role: "model", text: responseText});
-      resetInput();
+      setCurrentQuestion((prev) => prev + 1);
     } catch (err) {
       console.error("Chat Error:", err);
     } finally {
@@ -87,6 +97,10 @@ const InterviewChat = () => {
   // Placeholder for voice recording functionality
   const recordVoice = () => {
     alert("Voice recording not implemented yet!");
+  };
+
+  const endInterview = () => {
+    alert("Ending interview not implemented yet!");
   };
 
   return (
@@ -105,12 +119,22 @@ const InterviewChat = () => {
         >
           Start Interview
         </button>
-      ) : (
+      ) : currentQuestion < totalQuestions ? (
         <ChatInputs
           recordFunction={recordVoice}
           sendMessageFunction={sendMessage}
           loading={loading}
         />
+      ) : (
+        <div className="text-center flex flex-col gap-2 text-gray-500">
+          <p>Interview complete! Thank you for participating.</p>
+          <button
+            onClick={endInterview}
+            className="bg-yellow-500 rounded-md cursor-pointer mx-auto hover:bg-yellow-700 duration-200 text-white p-2"
+          >
+            View Feedback
+          </button>
+        </div>
       )}
     </div>
   );

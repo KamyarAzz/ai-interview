@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import microhponeIcon from "@/assets/mic-icon.svg";
-import sendIcon from "@/assets/send-icon.svg";
+import microhponeIcon from "@/assets/images/interview-chat/microphone.svg";
+import sendIcon from "@/assets/images/interview-chat/send.svg";
 type Props = {
   recordFunction: () => void;
   sendMessageFunction: (message: string, resetInput: () => void) => void;
@@ -12,7 +12,7 @@ export default function ChatInputs({
   sendMessageFunction,
   loading,
 }: Props) {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState<string>("");
 
   const resetInput = () => {
     setInput("");
