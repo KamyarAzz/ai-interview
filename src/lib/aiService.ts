@@ -1,9 +1,17 @@
-import {GoogleGenAI, type Chat} from "@google/genai";
+import {GoogleGenAI, type Chat, type Content} from "@google/genai";
 import {type InterviewMessage} from "@/types/interview";
 
 const ai = new GoogleGenAI({
   apiKey: import.meta.env.VITE_GEMINI_API_KEY,
 });
+
+// Convert InterviewMessage to Content format expected by Google GenAI
+const convertToContent = (messages: InterviewMessage[]): Content[] => {
+  return messages.map((msg) => ({
+    role: msg.role,
+    parts: [{text: msg.text}],
+  }));
+};
 
 export const createInterviewChat = (
   initialHistory: InterviewMessage[] = [],
@@ -14,7 +22,7 @@ export const createInterviewChat = (
       systemInstruction:
         "You are a Senior Engineer. Conduct a technical interview. Ask one question at a time.",
     },
-    history: initialHistory,
+    history: convertToContent(initialHistory),
   });
 };
 

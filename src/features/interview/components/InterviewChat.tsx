@@ -51,13 +51,26 @@ const InterviewChat = () => {
     setMessages([initialUserMessage]);
   };
 
-  const sendMessage = async () => {
-    // Basic validation
-    if (!input.trim() || !chatRef.current) return;
-    const newUserMsg: InterviewMessage = {role: "user", text: input};
-    setMessages((prev) => [...prev, newUserMsg]);
+  const addMessageToChat = (message: InterviewMessage) => {
+    setMessages((prev) => [...prev, message]);
     setInput("");
     playSound();
+  };
+
+  const messageValidation = (message: string) => {
+    // Basic validation
+    if (!message.trim() || !chatRef.current) {
+      alert("Please enter a valid message.");
+    } else {
+      sendMessage(message);
+    }
+  };
+
+  const sendMessage = async (message: string) => {
+    if (!chatRef.current) return;
+    // Add user's message to the chat immediately for better UX
+    const newUserMsg: InterviewMessage = {role: "user", text: message};
+    addMessageToChat(newUserMsg);
 
     try {
       setLoading(true);
@@ -65,8 +78,7 @@ const InterviewChat = () => {
         chatRef.current,
         newUserMsg.text,
       );
-      setMessages((prev) => [...prev, {role: "model", text: responseText}]);
-      playSound();
+      addMessageToChat({role: "model", text: responseText});
     } catch (err) {
       console.error("Chat Error:", err);
     } finally {
@@ -76,7 +88,7 @@ const InterviewChat = () => {
 
   const sendMessageWithEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      sendMessage();
+      messageValidation(input);
     }
   };
 
@@ -88,7 +100,7 @@ const InterviewChat = () => {
   return (
     <div className="p-4 h-full flex flex-col">
       <audio id="audio" className="hidden" controls />
-      <div className="h-full flex flex-col overflow-y-auto border gap-2 rounded-md p-2 mb-4">
+      <div className="h-full flex flex-col overflow-auto overflow-y-auto border gap-2 rounded-md p-2 mb-4">
         {messages.map((m, i) => (
           <p
             key={i}
@@ -110,6 +122,11 @@ const InterviewChat = () => {
             {m.text}
           </p>
         ))}
+        {loading && (
+          <p className="p-2 rounded-md relative bg-gray-200 animate-pulse">
+            AI is typing...
+          </p>
+        )}
       </div>
       {!chatRef.current ? (
         <button
@@ -142,7 +159,7 @@ const InterviewChat = () => {
           </button>
           <button
             disabled={loading}
-            onClick={sendMessage}
+            onClick={() => messageValidation(input)}
             className="bg-black disabled:bg-gray-300 disabled:cursor-not-allowed text-center items-center flex text-3xl h-8 w-8 text-white p-1.5 rounded-full hover:bg-gray-800 duration-150 cursor-pointer"
           >
             <svg
