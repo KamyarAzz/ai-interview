@@ -43,7 +43,7 @@ export default function Sidebar() {
       ))}
       <div
         onClick={logout}
-        className="w-full mt-auto flex items-center gap-2 px-2.5 py-2 rounded-md transition hover:bg-gray-200"
+        className="w-full mt-auto flex cursor-pointer items-center gap-2 px-2.5 py-2 rounded-md transition hover:bg-gray-200"
       >
         <img className="w-6 h-6" src={logoutIcon} alt="Logout" />
         <span>Logout</span>

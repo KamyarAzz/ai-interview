@@ -11,9 +11,9 @@ import {Link} from "react-router";
 const InterviewChat = () => {
   // TEST DATA - this would come from props or context in a real app
   const interviewContext: InterviewContext = {
-    expertise: "Software Engineering",
-    experience: "Mid",
-    competencies: ["problem-solving", "system design", "coding"],
+    expertise: "Communication Systems",
+    experience: "Intern",
+    competencies: [],
     timeLimitEnabled: false,
     timePerQuestion: 150,
     totalQuestions: 2,
@@ -105,7 +105,6 @@ const InterviewChat = () => {
           competencies: interviewContext.competencies,
         },
       );
-      console.log(currentQuestion, interviewContext.totalQuestions);
       if (currentQuestion < interviewContext.totalQuestions) {
         addMessageToChat({role: "model", text: responseText});
         setCurrentQuestion((prev) => prev + 1);
