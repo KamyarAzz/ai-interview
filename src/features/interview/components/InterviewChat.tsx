@@ -26,6 +26,7 @@ const InterviewChat = () => {
   };
   const [clarificationUsed, setClarificationUsed] = useState(false);
   const [messages, setMessages] = useState<InterviewMessage[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(
     interviewContext.currentQuestion || 0,
@@ -128,6 +129,7 @@ const InterviewChat = () => {
         endInterview();
       }
     } catch (err) {
+      setError("Failed to get response from AI. Please try again.");
       console.error("Chat Error:", err);
     } finally {
       setLoading(false);
@@ -171,23 +173,26 @@ const InterviewChat = () => {
   return (
     <div className="p-2 h-full flex flex-col">
       <audio id="audio" className="hidden" controls />
-      <div className="flex relative">
+
+      <div className="flex relative items-center mb-2">
         <Link
           to="/dashboard"
-          className="absolute left-0 top-0 text-sm text-gray-500 hover:text-gray-700"
+          className="absolute left-0 text-sm text-gray-500 hover:text-gray-700"
         >
           &larr; Back to Dashboard
         </Link>
-        <h1 className="text-lg font-semibold text-center w-full">
+        <h1 className="text-lg font-semibold text-center w-full px-4">
           {interviewContext.expertise} Interview - {interviewContext.experience}{" "}
           Level
         </h1>
       </div>
-      <div className="h-full flex flex-col overflow-auto overflow-y-auto border gap-2 rounded-md p-2 mb-4">
+
+      <div className="flex-1 flex flex-col overflow-auto gap-2 border rounded-md p-2 mb-4">
         {messages.map((m, i) => (
           <TextBubble key={i} message={m} />
         ))}
         {loading && <LoadingBubble />}
+        {error && <div className="text-red-500 text-center">{error}</div>}
       </div>
       {!chatRef.current ? (
         <button
@@ -200,7 +205,7 @@ const InterviewChat = () => {
         <ChatInputs
           recordFunction={recordVoice}
           sendMessageFunction={sendMessage}
-          loading={loading}
+          disabled={loading || Boolean(error)}
         />
       ) : (
         <div className="text-center flex flex-col gap-2 text-gray-500">

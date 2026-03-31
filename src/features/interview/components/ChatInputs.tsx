@@ -4,13 +4,13 @@ import sendIcon from "@/assets/images/interview-chat/send.svg";
 type Props = {
   recordFunction: () => void;
   sendMessageFunction: (message: string, resetInput: () => void) => void;
-  loading?: boolean;
+  disabled?: boolean;
 };
 
 export default function ChatInputs({
   recordFunction,
   sendMessageFunction,
-  loading,
+  disabled = false,
 }: Props) {
   const [input, setInput] = useState<string>("");
 
@@ -28,32 +28,28 @@ export default function ChatInputs({
   };
 
   return (
-    <div className="flex border gap-2 pr-2 justify-center items-center w-full rounded-md">
+    <div className="flex gap-2 items-center w-full border rounded-md p-1 flex-wrap">
       <input
-        disabled={loading}
+        disabled={disabled}
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => sendMessageWithEnter(e, input)}
-        className="focus:outline-0 p-2 w-full rounded-md"
+        className="flex-1 p-2 rounded-md focus:outline-none min-w-37.5"
         placeholder="Type your answer..."
       />
       <button
-        disabled={loading}
+        disabled={disabled}
         onClick={recordFunction}
-        className="bg-black disabled:bg-gray-300 disabled:cursor-not-allowed text-center items-center flex text-3xl h-8 w-8 text-white p-1.5 rounded-full hover:bg-gray-800 duration-150 cursor-pointer"
+        className="bg-black disabled:bg-gray-300 text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
       >
-        <img
-          className="w-full h-full"
-          alt="Record Voice"
-          src={microhponeIcon}
-        />
+        <img className="w-5 h-5" alt="Record Voice" src={microhponeIcon} />
       </button>
       <button
-        disabled={loading}
+        disabled={disabled}
         onClick={() => sendMessageFunction(input, resetInput)}
-        className="bg-black disabled:bg-gray-300 disabled:cursor-not-allowed text-center items-center flex text-3xl h-8 w-8 text-white p-1.5 rounded-full hover:bg-gray-800 duration-150 cursor-pointer"
+        className="bg-black disabled:bg-gray-300 text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
       >
-        <img className="w-full h-full" alt="Send Message" src={sendIcon} />
+        <img className="w-5 h-5" alt="Send Message" src={sendIcon} />
       </button>
     </div>
   );
