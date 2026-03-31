@@ -1,5 +1,10 @@
 import {createInterviewChat, sendInterviewMessage} from "@/lib/aiService";
-import {type InterviewContext, type InterviewMessage} from "@/types/interview";
+import {
+  type InterviewContext,
+  type InterviewMessage,
+  type InterviewMessageType,
+  type InterviewQuestion,
+} from "@/types/interview";
 import {type Chat} from "@google/genai";
 import {useState, useRef} from "react";
 import popSoundEffect from "@/assets/sounds/pop.mp3";
@@ -11,22 +16,22 @@ import {Link} from "react-router";
 const InterviewChat = () => {
   // TEST DATA - this would come from props or context in a real app
   const interviewContext: InterviewContext = {
-    expertise: "Communication Systems",
+    expertise: "Frontend Development",
     experience: "Intern",
     competencies: [],
-    timeLimitEnabled: false,
-    timePerQuestion: 150,
+    timeLimitEnabled: true,
     totalQuestions: 2,
     currentQuestion: 0,
     phase: "interview",
   };
-
+  const [clarificationUsed, setClarificationUsed] = useState(false);
   const [messages, setMessages] = useState<InterviewMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(
     interviewContext.currentQuestion || 0,
   );
   const [endedInterview, setEndedInterview] = useState(false);
+  // const [timeLeft, setTimeLeft] = useState(0);
 
   // We use a ref to store the audio element for the send sound effect, so it doesn't cause re-renders when updated
   const sendSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -65,14 +70,23 @@ const InterviewChat = () => {
     // Initialize the chat with the initial user message
     chatRef.current = createInterviewChat(
       [initialUserMessage],
-      interviewContext.expertise,
+      interviewContext,
     );
     sendMessage(initialUserMessage.text, () => {});
   };
 
-  const addMessageToChat = (message: InterviewMessage) => {
+  const addMessageToChat = (
+    message: InterviewMessage,
+    messageType?: InterviewMessageType,
+  ) => {
     playSound();
     setMessages((prev) => [...prev, message]);
+    if (message.role === "model" && messageType === "question") {
+      setClarificationUsed(false);
+      setCurrentQuestion((prev) => prev + 1);
+    } else if (message.role === "model" && messageType === "clarification") {
+      setClarificationUsed(true);
+    }
   };
 
   const messageValidation = (message: string) => {
@@ -97,18 +111,20 @@ const InterviewChat = () => {
         chatRef.current,
         newUserMsg.text,
         {
+          ...interviewContext,
           currentQuestion,
-          totalQuestions: interviewContext.totalQuestions,
-          phase: "interview",
-          expertise: interviewContext.expertise,
-          experience: interviewContext.experience,
-          competencies: interviewContext.competencies,
         },
+        clarificationUsed,
       );
-      if (currentQuestion < interviewContext.totalQuestions) {
-        addMessageToChat({role: "model", text: responseText});
-        setCurrentQuestion((prev) => prev + 1);
-      } else {
+      const responseJSON = cleanResponseJSON(responseText);
+      addMessageToChat(
+        {role: "model", text: responseJSON.message},
+        responseJSON.messageType,
+      );
+      if (
+        currentQuestion >= interviewContext.totalQuestions &&
+        responseJSON.messageType === "question"
+      ) {
         endInterview();
       }
     } catch (err) {
@@ -116,6 +132,17 @@ const InterviewChat = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const cleanResponseJSON = (responseText: string): InterviewQuestion => {
+    const cleanedResponseText = responseText
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    const cleanedResponseJSON = JSON.parse(cleanedResponseText);
+
+    return cleanedResponseJSON;
   };
 
   // Placeholder for voice recording functionality
@@ -137,7 +164,7 @@ const InterviewChat = () => {
   };
 
   const navigateToFeedback = () => {
-    // In a real app, you would use something like React Router's useNavigate here
+    // ToDo
     // navigate("/feedback", { state: { messages, interviewContext } });
   };
 

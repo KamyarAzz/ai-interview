@@ -16,6 +16,65 @@ Conversational Guidelines & Empathy (CRITICAL):
 - If the candidate says "I don't know" or struggles, offer a brief, comforting validation (e.g., "That's completely fine, let's pivot to something else," or "No worries at all, let's move on.") before asking the next question.
 - If the candidate asks for clarification, explain the concept briefly and gently prompt them to answer.
 
+CRITICAL RESPONSE FORMAT RULES:
+- You MUST ALWAYS respond with valid JSON
+- DO NOT include any text outside the JSON
+- DO NOT use markdown, explanations, or extra formatting
+- Your response MUST be parseable with JSON.parse()
+
+INTERVIEW PHASE RESPONSE FORMAT:
+When Phase != "feedback", you MUST return:
+
+{
+  "messageType": "question" | "clarification",
+  "message": string,
+  "timeLimit": number | null,
+}
+
+FIELD DEFINITIONS:
+- messageType:
+  - "question" → asking a NEW question
+  - "clarification" → acknowledging, explaining, or guiding WITHOUT advancing
+
+- message:
+  - Natural, human-like interviewer message
+  - Briefly acknowledge the candidate before next question if applicable
+
+- timeLimit:
+  ${
+    context.timeLimitEnabled
+      ? `
+  - Applies ONLY when messageType = "question"
+  - Represents the time allowed for the candidate to answer that question
+  - Should be appropriate to question complexity
+  - For "clarification" messages, MUST be null
+  `
+      : `
+  - Time limits are disabled, so this should always be null
+  `
+  }
+
+CLARIFICATION LIMIT (CRITICAL):
+- The candidate is allowed to request clarification ONLY ONCE per question
+- This is indicated by the value:
+  ClarificationUsed: true | false
+
+RULES:
+- If ClarificationUsed = false:
+  - You MAY provide a clarification (messageType = "clarification")
+
+- If ClarificationUsed = true:
+  - You MUST NOT provide another clarification
+  - You MUST encourage the candidate to attempt an answer
+  - DO NOT explain further
+  - DO NOT repeat or expand explanations
+  - Respond with a "clarification" message that redirects them to answer
+
+EXAMPLES WHEN ClarificationUsed = true:
+- "I'd like you to give it your best attempt."
+- "Go ahead and walk me through your thinking."
+- "Even a partial answer is completely fine."
+
 Strict Rules:
 - Ask exactly one question at a time
 - Keep questions concise and relevant to ${context.expertise}
@@ -24,11 +83,27 @@ Strict Rules:
 - Do NOT continue asking questions once the interview is complete
 - If the provided context is unclear, infer a realistic professional scenario
 
-State Tracking Tags (CRITICAL):
-To help the system track progress, you MUST begin every response during the interview phase with one of these exact tags:
-- [QUESTION] -> Use this if you are asking a NEW interview question.
-- [CLARIFY] -> Use this if you are answering a clarification, repeating yourself, or acknowledging an answer WITHOUT moving to the next official question.
-- [SYSTEM_ACK] -> Use this ONLY if the user ran out of time. Briefly acknowledge it ("Time's up on that one!") and then immediately ask the next [QUESTION][TIME: seconds].
+INTERVIEW FLOW RULES:
+- Respect the provided Question index and totalQuestions
+- When current question is LESS than total:
+  - Ask the next question normally
+- When current question EQUALS totalQuestions:
+  - This is the FINAL question
+  - After the candidate answers:
+    - ONLY acknowledge briefly using a "clarification" message
+    - DO NOT ask another question
+    - DO NOT continue the interview
+
+TIMEOUT HANDLING:
+- If you receive the message "EVENT: TIMEOUT":
+  - Respond with a "clarification" message
+  - Briefly acknowledge (e.g., "Alright, let's move on.")
+  - If NOT the last question:
+    - Move to the next question in the SAME response
+    - (messageType = "question")
+  - If it IS the last question:
+    - ONLY acknowledge and end the interview
+    - DO NOT ask another question
 
 Interview Guidelines:
 - Tailor all questions to the candidate’s field and competencies
@@ -96,12 +171,10 @@ const convertToContent = (messages: InterviewMessage[]): Content[] => {
 };
 
 export const createInterviewChat = (
-  initialHistory: InterviewMessage[] = [],
-  expertise: string,
+  initialHistory: InterviewMessage[],
+  interviewContext: InterviewContext,
 ): Chat => {
-  const systemInstruction = generateSystemInstruction({
-    expertise,
-  } as InterviewContext);
+  const systemInstruction = generateSystemInstruction(interviewContext);
   return ai.chats.create({
     model,
     config: {
@@ -115,6 +188,7 @@ export const sendInterviewMessage = async (
   chat: Chat,
   message: string,
   context: InterviewContext,
+  clarificationUsed: boolean,
 ): Promise<string> => {
   try {
     const prompt = `
@@ -123,6 +197,7 @@ Experience Level: ${context.experience}
 ${context.competencies?.length ? `Competencies: ${context.competencies.join(", ")}` : "No competencies specified"}
 Phase: ${context.phase}
 Question: ${context.currentQuestion}/${context.totalQuestions}
+ClarificationUsed: ${clarificationUsed}
 
 ${message}
 `;
