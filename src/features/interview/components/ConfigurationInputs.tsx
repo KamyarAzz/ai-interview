@@ -1,3 +1,4 @@
+import {useInterviewContextStore} from "@/stores/interviewContextStore";
 import type {ExperienceLevel, UserContext} from "@/types/interview";
 import {useState} from "react";
 import {useNavigate} from "react-router";
@@ -11,12 +12,19 @@ export default function ConfigurationInputs() {
   });
 
   const navigate = useNavigate();
+  const setContext = useInterviewContextStore((state) => state.setContext);
 
   const handleProceed = () => {
     if (configuration.expertise.trim() === "") {
       alert("Please enter your area of expertise.");
       return;
     }
+    setContext({
+      ...configuration,
+      totalQuestions: 6,
+      currentQuestion: 0,
+      phase: "interview",
+    });
     navigate("/interview");
   };
 

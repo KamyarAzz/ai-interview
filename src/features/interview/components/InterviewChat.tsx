@@ -1,6 +1,5 @@
 import {createInterviewChat, sendInterviewMessage} from "@/lib/aiService";
 import {
-  type InterviewContext,
   type InterviewMessage,
   type InterviewMessageType,
   type InterviewQuestion,
@@ -12,18 +11,11 @@ import TextBubble from "./TextBubble";
 import LoadingBubble from "./LoadingBubble";
 import ChatInputs from "./ChatInputs";
 import {Link} from "react-router";
+import {useInterviewContextStore} from "@/stores/interviewContextStore";
 
 const InterviewChat = () => {
-  // TEST DATA - this would come from props or context in a real app
-  const interviewContext: InterviewContext = {
-    expertise: "Frontend Development",
-    experience: "Intern",
-    competencies: [],
-    timeLimitEnabled: true,
-    totalQuestions: 2,
-    currentQuestion: 0,
-    phase: "interview",
-  };
+  const interviewContext = useInterviewContextStore((state) => state.context);
+
   const [clarificationUsed, setClarificationUsed] = useState(false);
   const [messages, setMessages] = useState<InterviewMessage[]>([]);
   const [error, setError] = useState<string | null>(null);

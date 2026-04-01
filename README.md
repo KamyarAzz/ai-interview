@@ -1,1 +1,1 @@
-Yooo
+AI Interview Platform
