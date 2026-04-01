@@ -25,7 +25,7 @@ export default function ConfigurationInputs() {
       currentQuestion: 0,
       phase: "interview",
     });
-    navigate("/interview");
+    navigate("/interview/chat");
   };
 
   const [skillInput, setSkillInput] = useState("");
