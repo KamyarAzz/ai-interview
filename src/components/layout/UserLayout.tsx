@@ -13,9 +13,9 @@ export default function UserLayout() {
   if (!user) return <Navigate to="/login" replace />;
 
   return (
-    <div className="flex flex-col w-full h-full relative">
+    <div className="flex flex-col w-full h-full">
       <Navbar />
-      <div className="flex justify-between w-full h-full">
+      <div className="flex justify-between w-full h-full pt-16">
         <div className="flex flex-col px-6 py-4 w-full h-full">
           <Outlet />
         </div>

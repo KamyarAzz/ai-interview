@@ -63,8 +63,14 @@ export default function ConfigurationInputs() {
 
       {/* Expertise */}
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-600">Expertise</label>
+        <label
+          htmlFor="expertise"
+          className="text-sm font-medium text-gray-600"
+        >
+          Expertise
+        </label>
         <input
+          id="expertise"
           type="text"
           className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           value={configuration.expertise}
@@ -76,8 +82,14 @@ export default function ConfigurationInputs() {
 
       {/* Experience */}
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-600">Experience</label>
+        <label
+          htmlFor="experience"
+          className="text-sm font-medium text-gray-600"
+        >
+          Experience
+        </label>
         <select
+          id="experience"
           className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           value={configuration.experience}
           onChange={(e) =>
@@ -97,13 +109,17 @@ export default function ConfigurationInputs() {
 
       {/* Competencies */}
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-600">
+        <label
+          htmlFor="competencies"
+          className="text-sm font-medium text-gray-600"
+        >
           Competencies
         </label>
 
         {/* Input */}
         <div className="flex gap-2">
           <input
+            id="competencies"
             type="text"
             placeholder="Type a skill and press Enter"
             className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -145,12 +161,16 @@ export default function ConfigurationInputs() {
 
       {/* Time Limit */}
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-gray-600">
+        <label
+          htmlFor="timeLimit"
+          className="text-sm font-medium text-gray-600"
+        >
           Time Limit Enabled
         </label>
         <input
           type="checkbox"
-          className="w-5 h-5"
+          id="timeLimit"
+          className="w-5 h-5 cursor-pointer accent-blue-500"
           checked={configuration.timeLimitEnabled}
           onChange={(e) =>
             setConfiguration({

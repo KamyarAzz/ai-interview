@@ -179,7 +179,7 @@ const InterviewChat = () => {
         </h1>
       </div>
 
-      <div className="flex-1 flex flex-col overflow-auto gap-2 border rounded-md p-2 mb-4">
+      <div className="flex-1 flex flex-col h-full overflow-auto gap-2 border rounded-md p-2 mb-4">
         {messages.map((m, i) => (
           <TextBubble key={i} message={m} />
         ))}

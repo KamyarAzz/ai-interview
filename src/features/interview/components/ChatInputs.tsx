@@ -40,14 +40,14 @@ export default function ChatInputs({
       <button
         disabled={disabled}
         onClick={recordFunction}
-        className="bg-black disabled:bg-gray-300 text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
+        className="bg-black cursor-pointer disabled:cursor-auto disabled:bg-gray-300 text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
       >
         <img className="w-5 h-5" alt="Record Voice" src={microhponeIcon} />
       </button>
       <button
         disabled={disabled}
         onClick={() => sendMessageFunction(input, resetInput)}
-        className="bg-black disabled:bg-gray-300 text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
+        className="bg-black disabled:bg-gray-300 disabled:cursor-auto cursor-pointer text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
       >
         <img className="w-5 h-5" alt="Send Message" src={sendIcon} />
       </button>
