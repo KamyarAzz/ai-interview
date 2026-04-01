@@ -15,7 +15,7 @@ export default function Sidebar() {
     },
     {
       name: "Interview",
-      href: "/interview",
+      href: "/interview-configuration",
       image: interviewIcon,
     },
     {

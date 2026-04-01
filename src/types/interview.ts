@@ -2,22 +2,21 @@ export type InterviewRole = "user" | "model";
 
 export type InterviewMessageType = "question" | "clarification";
 
+export type ExperienceLevel = "Intern" | "Junior" | "Mid" | "Senior" | "Lead";
+
+export type InterviewPhase = "interview" | "feedback";
 export interface InterviewMessage {
   role: InterviewRole;
   text: string;
 }
 
-export type ExperienceLevel = "Intern" | "Junior" | "Mid" | "Senior" | "Lead";
-
-export type InterviewPhase = "interview" | "feedback";
-
-export type InterviewQuestion = {
+export interface InterviewQuestion {
   messageType: InterviewMessageType;
   message: string;
   timeLimit: number;
-};
+}
 
-export type Feedback = {
+export interface Feedback {
   scores: {
     communication: number;
     domainKnowledge: number;
@@ -28,14 +27,17 @@ export type Feedback = {
   weaknesses: string[];
   improvements: string[];
   finalSummary: string;
-};
+}
 
-export type InterviewContext = {
+export interface UserContext {
   expertise: string;
   experience: ExperienceLevel;
-  competencies?: string[];
-  phase: InterviewPhase;
-  currentQuestion?: number;
-  totalQuestions: number;
+  competencies: string[];
   timeLimitEnabled: boolean;
-};
+}
+
+export interface InterviewContext extends UserContext {
+  totalQuestions: number;
+  currentQuestion?: number;
+  phase: InterviewPhase;
+}
