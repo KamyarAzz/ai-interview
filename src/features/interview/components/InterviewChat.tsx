@@ -8,7 +8,6 @@ import {type Chat} from "@google/genai";
 import {useState, useRef} from "react";
 import popSoundEffect from "@/assets/sounds/pop.mp3";
 import TextBubble from "./TextBubble";
-import LoadingBubble from "./LoadingBubble";
 import ChatInputs from "./ChatInputs";
 import {Link} from "react-router";
 import {useInterviewContextStore} from "@/stores/interviewContextStore";
@@ -183,7 +182,12 @@ const InterviewChat = () => {
         {messages.map((m, i) => (
           <TextBubble key={i} message={m} />
         ))}
-        {loading && <LoadingBubble />}
+        {loading && (
+          <TextBubble
+            message={{role: "model", text: "Interviewer is typing..."}}
+            animation
+          />
+        )}
         {error && <div className="text-red-500 text-center">{error}</div>}
       </div>
       {!chatRef.current ? (
