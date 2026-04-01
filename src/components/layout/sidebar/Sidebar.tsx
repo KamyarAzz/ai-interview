@@ -15,12 +15,14 @@ export default function Sidebar() {
     },
     {
       name: "Interview",
-      href: "/interview-configuration",
+      href: "/interview/configuration",
+      match: "/interview/*",
+      exclude: ["/interview/history"],
       image: interviewIcon,
     },
     {
       name: "Interview History",
-      href: "/interview-history",
+      href: "/interview/history",
       image: historyIcon,
     },
     {name: "Subscriptions", href: "/subscriptions", image: subscriptionsIcon},

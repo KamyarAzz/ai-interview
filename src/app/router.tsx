@@ -38,15 +38,16 @@ export const router = createBrowserRouter([
         element: <DashboardPage />,
       },
       {
-        path: "/interview-configuration",
+        path: "/interview/configuration",
         element: <ConfigurationPage />,
       },
       {
-        path: "/interview",
+        // Todo: Change this to /interview once the configuration page is integrated into the interview page
+        path: "/interview/chat",
         element: <InterviewPage />,
       },
       {
-        path: "/interview-history",
+        path: "/interview/history",
         element: <InterviewHistoryPage />,
       },
       {

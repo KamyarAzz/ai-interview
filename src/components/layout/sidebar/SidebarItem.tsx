@@ -1,10 +1,17 @@
-import {NavLink} from "react-router";
+import {NavLink, useMatch} from "react-router";
 
 type Props = {item: {name: string; href: string; image: string}};
 
 export default function SidebarItem({item}: Props) {
+  const isCurrentlyActive = useMatch(item.href);
+
   return (
     <NavLink
+      onClick={(e) => {
+        if (isCurrentlyActive) {
+          e.preventDefault();
+        }
+      }}
       to={item.href}
       className={({isActive}) =>
         `w-full flex items-center gap-2 px-2.5 py-2 rounded-md transition
