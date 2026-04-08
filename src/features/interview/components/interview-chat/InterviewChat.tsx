@@ -7,8 +7,8 @@ import {
 import {type Chat} from "@google/genai";
 import {useState, useRef} from "react";
 import popSoundEffect from "@/assets/sounds/pop.mp3";
-import TextBubble from "./TextBubble";
-import ChatInputs from "./ChatInputs";
+import TextBubble from "./ui/TextBubble";
+import ChatInputs from "./inputs/ChatInputs";
 import {Link} from "react-router";
 import {useInterviewContextStore} from "@/stores/interviewContextStore";
 

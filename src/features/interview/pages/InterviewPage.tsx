@@ -1,5 +1,5 @@
 import Container from "@/components/ui/Container";
-import InterviewChat from "../components/InterviewChat";
+import InterviewChat from "../components/interview-chat/InterviewChat";
 
 export default function InterviewPage() {
   return (
