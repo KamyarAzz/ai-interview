@@ -39,7 +39,7 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="px-2.5 gap-2 h-full flex py-4 flex-col w-60 shadow-md">
+    <div className="px-2.5 gap-2 h-full flex py-4 flex-col w-60 bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
       {sidebarItems.map((item) => (
         <SidebarItem key={item.href} item={item} />
       ))}

@@ -16,10 +16,10 @@ export default function UserLayout() {
     <div className="flex flex-col w-full h-full">
       <Navbar />
       <div className="flex justify-between w-full h-full pt-16">
-        <div className="flex flex-col px-6 py-4 w-full h-full">
+        <Sidebar />
+        <div className="flex flex-col px-6 py-4 w-full h-full bg-background text-foreground overflow-auto">
           <Outlet />
         </div>
-        <Sidebar />
       </div>
     </div>
   );
