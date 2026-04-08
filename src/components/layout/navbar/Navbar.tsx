@@ -1,4 +1,4 @@
-import ThemeSwitch from "./theme-switch/ThemeSwitch";
+import ThemeSwitch from "../../../features/theme/components/ThemeSwitch";
 
 export default function Navbar() {
   return (
