@@ -38,9 +38,10 @@ export default function Competencies({configuration, setConfiguration}: Props) {
     <div className="flex flex-col gap-2">
       <label
         htmlFor="competencies"
-        className="text-sm font-medium text-gray-600"
+        className="text-sm font-medium text-gray-600 dark:text-gray-200"
       >
-        Competencies
+        Competencies{" "}
+        <span className="dark:text-gray-600 text-gray-400">(Maximum 3)</span>
       </label>
 
       {/* Input */}
@@ -49,7 +50,7 @@ export default function Competencies({configuration, setConfiguration}: Props) {
           id="competencies"
           type="text"
           placeholder="Type a skill and press Enter"
-          className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="flex-1 border rounded-lg px-3 py-2 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary dark:border-border"
           value={skillInput}
           onChange={(e) => setSkillInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -61,7 +62,7 @@ export default function Competencies({configuration, setConfiguration}: Props) {
             configuration.competencies.includes(skillInput.trim()) ||
             configuration.competencies.length >= 10
           }
-          className="bg-blue-500 cursor-pointer disabled:cursor-auto disabled:bg-gray-300 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          className="bg-blue-500 cursor-pointer disabled:cursor-auto disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
         >
           Add
         </button>
@@ -72,12 +73,12 @@ export default function Competencies({configuration, setConfiguration}: Props) {
         {configuration.competencies.map((skill) => (
           <div
             key={skill}
-            className="flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm"
+            className="flex items-center gap-2 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-gray-100 px-3 py-1 rounded-full text-sm"
           >
             {skill}
             <button
               onClick={() => removeSkill(skill)}
-              className="text-blue-500 cursor-pointer hover:text-red-500"
+              className="text-blue-500 dark:text-gray-100 duration-150 dark:hover:text-red-500 cursor-pointer hover:text-red-500"
             >
               ✕
             </button>

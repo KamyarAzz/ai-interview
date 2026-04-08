@@ -36,7 +36,7 @@ export default function ConfigurationLayout() {
   return (
     // <div className="w-full max-w-xl mx-auto p-6 bg-white rounded-2xl shadow-md flex flex-col gap-6">
     <Container className="w-full max-w-xl p-6 gap-6">
-      <h1 className="text-2xl font-semibold text-gray-800">
+      <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
         Configuration Inputs
       </h1>
 
@@ -66,7 +66,7 @@ export default function ConfigurationLayout() {
 
       {/* Button */}
       <button
-        className="bg-blue-500 cursor-pointer text-white py-3 rounded-xl hover:bg-blue-600 transition font-medium"
+        className="bg-blue-500 cursor-pointer duration-150 text-white py-3 rounded-xl hover:bg-blue-600 transition font-medium"
         onClick={handleProceed}
       >
         Proceed to Interview

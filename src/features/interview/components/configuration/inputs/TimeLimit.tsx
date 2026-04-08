@@ -17,7 +17,10 @@ export default function TimeLimit({configuration, setConfiguration}: Props) {
 
   return (
     <div className="flex items-center justify-between">
-      <label htmlFor="timeLimit" className="text-sm font-medium text-gray-600">
+      <label
+        htmlFor="timeLimit"
+        className="text-sm font-medium text-gray-600 dark:text-gray-200"
+      >
         Time Limit Enabled
       </label>
       <input
