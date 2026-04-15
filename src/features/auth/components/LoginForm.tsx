@@ -1,74 +1,18 @@
 import {Link} from "react-router";
-import {toast} from "react-toastify";
-import {FirebaseError} from "firebase/app";
-import {
-  browserLocalPersistence,
-  browserSessionPersistence,
-  setPersistence,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 import {Button} from "@/components/ui/Button";
 import FormWrapper from "@/components/ui/FormWrapper";
 import {Input} from "@/components/ui/Input";
-import {auth} from "@/lib/firebase";
-import {useAuthStore} from "@/stores/authStore";
-import {useState} from "react";
+import {useAuth} from "../hooks/useAuth";
 
 export default function LoginForm() {
-  const [loading, setLoading] = useState<boolean>(false);
-  const setUser = useAuthStore((state) => state.setUser);
+  const {login, loading} = useAuth();
 
   const handleLogin = async (data: FormData) => {
-    const email = data.get("email");
-    const password = data.get("password");
-    const remember = data.get("remember");
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+    const remember = Boolean(data.get("remember"));
 
-    if (typeof email !== "string" || typeof password !== "string") {
-      toast("Invalid form submission");
-      return;
-    }
-
-    if (!email) {
-      toast("Please enter your email");
-      return;
-    }
-
-    if (!password) {
-      toast("Please enter your password");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      await setPersistence(
-        auth,
-        remember ? browserLocalPersistence : browserSessionPersistence,
-      );
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const firebaseUser = userCredential.user;
-
-      // Store user in auth store
-      setUser({
-        id: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL,
-      });
-
-      toast("Login successful");
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        toast(error.message);
-      } else {
-        toast("Unexpected error occurred");
-      }
-    } finally {
-      setLoading(false);
-    }
+    login(email, password, remember);
   };
 
   return (

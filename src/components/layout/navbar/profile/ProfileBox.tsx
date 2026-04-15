@@ -1,8 +1,8 @@
 import {useEffect, useRef} from "react";
-import type {AppUser} from "@/types/user";
+import type {UserDoc} from "@/types/user";
 
 type Props = {
-  user: AppUser | null;
+  user: UserDoc | null;
   setIsOpened: React.Dispatch<React.SetStateAction<boolean>>;
 };
 

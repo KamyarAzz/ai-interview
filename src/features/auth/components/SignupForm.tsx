@@ -1,73 +1,18 @@
-import {createUserWithEmailAndPassword} from "firebase/auth";
-import {FirebaseError} from "firebase/app";
-import {doc, setDoc} from "firebase/firestore";
-import {Link, useNavigate} from "react-router";
-import {toast} from "react-toastify";
+import {Link} from "react-router";
 import {Button} from "@/components/ui/Button";
 import FormWrapper from "@/components/ui/FormWrapper";
 import {Input} from "@/components/ui/Input";
-import {db} from "@/lib/firebase";
-import {auth} from "@/lib/firebase";
+import {useAuth} from "../hooks/useAuth";
 
 export default function SignupForm() {
-  const navigate = useNavigate();
+  const {loading, signUp} = useAuth();
 
   const handleSingup = async (data: FormData) => {
-    const email = data.get("email");
-    const password = data.get("password");
-    const passwordRepeat = data.get("password-repeat");
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+    const passwordRepeat = data.get("password-repeat") as string;
 
-    if (
-      typeof email !== "string" ||
-      typeof password !== "string" ||
-      typeof passwordRepeat !== "string"
-    ) {
-      toast("Invalid form submission");
-      return;
-    }
-
-    if (!email) {
-      toast("Please enter an email");
-      return;
-    }
-
-    if (!password) {
-      toast("Please enter a password");
-      return;
-    }
-
-    if (password.length < 8) {
-      toast("Password length is too weak");
-      return;
-    }
-
-    if (password !== passwordRepeat) {
-      toast("Passwords don't match");
-      return;
-    }
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const user = userCredential.user;
-
-      await setDoc(doc(db, "users", user.uid), {
-        email: user.email,
-        role: "free",
-        createdAt: new Date(),
-      });
-      toast("Account created successfully");
-      navigate("/dashboard");
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        toast(error.message);
-      } else {
-        toast("Unexpected error occurred");
-      }
-    }
+    signUp(email, password, passwordRepeat);
   };
 
   return (
@@ -79,7 +24,9 @@ export default function SignupForm() {
       <Input type="password" name="password" id="password" />
       <label htmlFor="password-repeat">Repeat Password</label>
       <Input type="password" name="password-repeat" id="password-repeat" />
-      <Button className="mt-5">Signup</Button>
+      <Button disabled={loading} className="mt-5">
+        Signup
+      </Button>
       <p className="text-gray-500 text-sm text-center">
         Already have an account?{" "}
         <Link

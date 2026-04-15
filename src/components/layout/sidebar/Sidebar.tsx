@@ -5,8 +5,10 @@ import historyIcon from "../../../assets/images/sidebar/history.svg";
 import subscriptionsIcon from "../../../assets/images/sidebar/calendar.svg";
 import settingsIcon from "../../../assets/images/sidebar/settings.svg";
 import logoutIcon from "../../../assets/images/sidebar/logout.svg";
+import {useAuth} from "@/features/auth/hooks/useAuth";
 
 export default function Sidebar() {
+  const {logout} = useAuth();
   const sidebarItems = [
     {
       name: "Dashboard",
@@ -32,11 +34,6 @@ export default function Sidebar() {
       image: settingsIcon,
     },
   ];
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    // Todo: Logout functioanlity
-  };
 
   return (
     <div className="px-2.5 gap-2 h-full flex py-4 flex-col w-60 shadow-md">
