@@ -1,6 +1,7 @@
-import {useInterviewContextStore} from "@/stores/interviewContextStore";
 import type {ExperienceLevel, UserContext} from "@/types/interview";
 import {useState} from "react";
+import {toast} from "react-toastify";
+import useInterview from "../hooks/useInterview";
 import {useNavigate} from "react-router";
 
 export default function ConfigurationInputs() {
@@ -10,25 +11,20 @@ export default function ConfigurationInputs() {
     competencies: [],
     timeLimitEnabled: true,
   });
-
+  const [skillInput, setSkillInput] = useState("");
+  const {loading, createInterview} = useInterview();
   const navigate = useNavigate();
-  const setContext = useInterviewContextStore((state) => state.setContext);
 
-  const handleProceed = () => {
+  const startInterview = async () => {
     if (configuration.expertise.trim() === "") {
-      alert("Please enter your area of expertise.");
+      toast("Please enter your area of expertise.");
       return;
     }
-    setContext({
-      ...configuration,
-      totalQuestions: 6,
-      currentQuestion: 0,
-      phase: "interview",
-    });
-    navigate("/interview/chat");
+    const interviewId = await createInterview(configuration);
+    if (interviewId) {
+      navigate(`/interview/${interviewId}/chat`);
+    }
   };
-
-  const [skillInput, setSkillInput] = useState("");
 
   const addSkill = () => {
     const trimmed = skillInput.trim();
@@ -70,6 +66,7 @@ export default function ConfigurationInputs() {
           Expertise
         </label>
         <input
+          disabled={loading}
           id="expertise"
           type="text"
           className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -89,6 +86,7 @@ export default function ConfigurationInputs() {
           Experience
         </label>
         <select
+          disabled={loading}
           id="experience"
           className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           value={configuration.experience}
@@ -126,13 +124,15 @@ export default function ConfigurationInputs() {
             value={skillInput}
             onChange={(e) => setSkillInput(e.target.value)}
             onKeyDown={handleKeyDown}
+            disabled={loading}
           />
           <button
             onClick={addSkill}
             disabled={
               skillInput.trim() === "" ||
               configuration.competencies.includes(skillInput.trim()) ||
-              configuration.competencies.length >= 10
+              configuration.competencies.length >= 10 ||
+              loading
             }
             className="bg-blue-500 cursor-pointer disabled:cursor-auto disabled:bg-gray-300 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
           >
@@ -149,6 +149,7 @@ export default function ConfigurationInputs() {
             >
               {skill}
               <button
+                disabled={loading}
                 onClick={() => removeSkill(skill)}
                 className="text-blue-500 cursor-pointer hover:text-red-500"
               >
@@ -168,6 +169,7 @@ export default function ConfigurationInputs() {
           Time Limit Enabled
         </label>
         <input
+          disabled={loading}
           type="checkbox"
           id="timeLimit"
           className="w-5 h-5 cursor-pointer accent-blue-500"
@@ -183,10 +185,11 @@ export default function ConfigurationInputs() {
 
       {/* Button */}
       <button
+        disabled={loading}
         className="bg-blue-500 cursor-pointer text-white py-3 rounded-xl hover:bg-blue-600 transition font-medium"
-        onClick={handleProceed}
+        onClick={startInterview}
       >
-        Proceed to Interview
+        Start Interview
       </button>
     </div>
   );

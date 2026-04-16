@@ -18,7 +18,7 @@ export default function Sidebar() {
     {
       name: "Interview",
       href: "/interview/configuration",
-      match: ["/interview/chat"],
+      match: ["/chat"],
       exclude: ["/interview/history"],
       image: interviewIcon,
     },

@@ -43,7 +43,7 @@ export const router = createBrowserRouter([
       },
       {
         // Todo: Change this to /interview once the configuration page is integrated into the interview page
-        path: "/interview/chat",
+        path: "/interview/:interviewId/chat",
         element: <InterviewPage />,
       },
       {

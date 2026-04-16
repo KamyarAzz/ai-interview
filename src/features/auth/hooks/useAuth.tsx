@@ -91,7 +91,6 @@ export function useAuth() {
     if (!loginValidation({email, password})) {
       return;
     }
-    console.log(email, password, remember);
     try {
       setLoading(true);
       await setPersistence(

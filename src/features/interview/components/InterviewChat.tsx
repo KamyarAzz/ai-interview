@@ -9,10 +9,13 @@ import {useState, useRef} from "react";
 import popSoundEffect from "@/assets/sounds/pop.mp3";
 import TextBubble from "./TextBubble";
 import ChatInputs from "./ChatInputs";
-import {Link} from "react-router";
+import {Link, useParams} from "react-router";
 import {useInterviewContextStore} from "@/stores/interviewContextStore";
+import {toast} from "react-toastify";
+import useInterview from "../hooks/useInterview";
 
 const InterviewChat = () => {
+  const {interviewId} = useParams();
   const interviewContext = useInterviewContextStore((state) => state.context);
 
   const [clarificationUsed, setClarificationUsed] = useState(false);
@@ -23,13 +26,14 @@ const InterviewChat = () => {
     interviewContext.currentQuestion || 0,
   );
   const [endedInterview, setEndedInterview] = useState(false);
-  // const [timeLeft, setTimeLeft] = useState(0);
 
   // We use a ref to store the audio element for the send sound effect, so it doesn't cause re-renders when updated
   const sendSoundRef = useRef<HTMLAudioElement | null>(null);
 
   // We use a ref to store the chat instance so that it persists across renders without causing re-renders
   const chatRef = useRef<Chat | null>(null);
+
+  const {updateInterview} = useInterview();
 
   // Initialize the sound effect once when the component mounts
   if (!sendSoundRef.current) {
@@ -91,7 +95,12 @@ const InterviewChat = () => {
   };
 
   const sendMessage = async (message: string, resetInput: () => void) => {
-    if (!messageValidation(message) || !chatRef.current) return;
+    if (
+      !messageValidation(message) ||
+      !chatRef.current ||
+      interviewId === undefined
+    )
+      return;
     // Add user's message to the chat immediately for better UX
     const newUserMsg: InterviewMessage = {role: "user", text: message};
     addMessageToChat(newUserMsg);
@@ -113,6 +122,10 @@ const InterviewChat = () => {
         {role: "model", text: responseJSON.message},
         responseJSON.messageType,
       );
+      updateInterview(interviewId, [
+        newUserMsg,
+        {role: "model", text: responseJSON.message},
+      ]);
       if (
         currentQuestion >= interviewContext.totalQuestions &&
         responseJSON.messageType === "question"
@@ -121,7 +134,7 @@ const InterviewChat = () => {
       }
     } catch (err) {
       setError("Failed to get response from AI. Please try again.");
-      console.error("Chat Error:", err);
+      console.error("Chat error:", err);
     } finally {
       setLoading(false);
     }
@@ -133,14 +146,16 @@ const InterviewChat = () => {
       .replace(/```/g, "")
       .trim();
 
-    const cleanedResponseJSON = JSON.parse(cleanedResponseText);
+    const cleanedResponseJSON = JSON.parse(
+      cleanedResponseText,
+    ) as InterviewQuestion;
 
     return cleanedResponseJSON;
   };
 
   // Placeholder for voice recording functionality
   const recordVoice = () => {
-    alert("Voice recording not implemented yet!");
+    toast("Voice recording not implemented yet!");
   };
 
   const endInterview = () => {
