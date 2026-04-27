@@ -53,11 +53,13 @@ export default function useInterview() {
 
   const updateInterview = async (
     interviewId: string,
+    currentQuestion: number,
     newMessages: InterviewMessage[],
   ) => {
     try {
       await updateDoc(doc(db, "interviews", interviewId), {
         messages: arrayUnion(...newMessages),
+        currentQuestion,
       });
     } catch (e) {
       console.error("Error updating interview: ", e);

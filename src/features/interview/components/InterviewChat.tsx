@@ -23,7 +23,7 @@ const InterviewChat = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(
-    interviewContext.currentQuestion || 0,
+    interviewContext.currentQuestion || 1,
   );
   const [endedInterview, setEndedInterview] = useState(false);
 
@@ -61,7 +61,7 @@ const InterviewChat = () => {
       role: "user",
       text: "Hello! Let's start.",
     };
-    setCurrentQuestion(0);
+    setCurrentQuestion(1);
 
     // Initialize the chat with the initial user message
     chatRef.current = createInterviewChat(
@@ -75,6 +75,7 @@ const InterviewChat = () => {
     message: InterviewMessage,
     messageType?: InterviewMessageType,
   ) => {
+    console.log(messageType, currentQuestion);
     playSound();
     setMessages((prev) => [...prev, message]);
     if (message.role === "model" && messageType === "question") {
@@ -122,7 +123,7 @@ const InterviewChat = () => {
         {role: "model", text: responseJSON.message},
         responseJSON.messageType,
       );
-      updateInterview(interviewId, [
+      updateInterview(interviewId, currentQuestion, [
         newUserMsg,
         {role: "model", text: responseJSON.message},
       ]);
